@@ -1,5 +1,23 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
+import * as Sentry from "@sentry/vue";
+
+const transaction = Sentry.startTransaction({
+  op: "test",
+  name: "Test Transaction",
+});
+
+try {
+  Sentry.configureScope(function (scope) {
+    scope.setTag("which-function", "foo-function");
+  });
+  foo();
+} catch (e) {
+  Sentry.captureException(e);
+} finally {
+  transaction.finish();
+}
+
 </script>
 
 <template>
